@@ -9,10 +9,15 @@
     </head>
     <body>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap');
+            @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+            @import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap");
+            @import url("https://fonts.googleapis.com/css2?family=Anaheim:wght@400..800&display=swap");
             :root {
-                --daytime-bg: rgb(255, 145, 36);
+                --dark-bg: #0b121e;
+                --dark-accent: #202b3a;
+                --dark-text: #4f637d;
+                --light-text: #d5d9e0;
+                --time-accent: #fff;
             }
             * {
                 box-sizing: border-box;
@@ -20,136 +25,121 @@
                 margin: 0;
                 user-select: none;
             }
-            body {
-                overflow: hidden;
-                height: 100vh;
-                background: linear-gradient(180deg, #3362ff, #76d6ff);
-            }
-            #error-box {
-                background-color: #c21a1a;
-                border: 3px solid #971515;
-                border-radius: 7px;
-                position: absolute;
-                left: 50%;
-                bottom: -20%;
-                transform: translate(-50%, -50%);
-                transition: all 0.25s;
-            }
-            #error-box p {
-                font-family: 'Geist Mono';
-                color: white;
-                margin: 20px;
-                font-size: 14px;
-            }
             #main {
-                background-color: rgba(0, 0, 0, 0.5);
-                border-radius: 15px;
+                height: 100vh;
+                display: flex;
+                justify-content: space-between;
+                flex-direction: row;
+                padding: 1rem;
+                overflow: hidden;
+                background-color: var(--dark-bg);
+            }
+            #middle-screen {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding-left: 1rem;
+                padding-right: 1rem;
+                flex-grow: 1;
+            }
+            #navbar {
+                height: 100%;
+                width: 80px;
+            }
+            #navbar,
+            #forecast,
+            #hourly-forecast,
+            #air-conditions {
+                border-radius: 20px;
+            }
+            #search-bar,
+            #navbar,
+            #forecast,
+            #hourly-forecast,
+            #air-conditions {
+                padding: 1rem;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5), 0 0 20px var(--dark-bg);
+                background-color: var(--dark-accent);
+            }
+            #search-bar::placeholder {
+                color: var(--dark-text);
+                font-style: italic;
+            }
+            #main-info {
+                height: 35%;
+                padding: 1rem;
+                position: relative;
+            }
+            #main-info h1,
+            #main-info h3,
+            #main-info p {
+                color: white;
+                font-family: "SF Pro Display";
+                font-weight: 200;
+            }
+            #main-info p:nth-child(1) {
+                font-size: 60px;
+                font-weight: 400;
+                color: var(--light-text);
+            }
+            #main-info p:nth-child(2) {
+                font-size: 30px;
+                color: var(--dark-text);
+            }
+            #main-info p:nth-child(3) {
+                color: var(--light-text);
+                font-weight: 600;
+                font-size: 56px;
+                position: absolute;
+                bottom: 0%;
+                transform: translateY(-10%);
+            }
+            #main-info img {
                 position: absolute;
                 top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 30vw;
-                padding: 10px;
+                right: 0%;
+                transform: translateY(-45%) translateX(-25%) scale(1.2);
             }
-            #main h1 {
-                text-align: center;
-                text-decoration: underline;
-                color: white;
-                font-family: 'Lexend Deca';
-                margin-bottom: 10px;
+            #hourly-forecast {
+                margin: 1rem 0 1rem;
+            }
+            #hourly-forecast,
+            #air-conditions {
+                flex-grow: 1;
+            }
+            #air-conditions > p {
+                color: var(--dark-text);
+                font-weight: 800;
+                font-family: "SF Pro Display";
             }
             #search-bar {
-                display: flex;
-                flex-direction: row;
-            }
-            #city-lookup {
-                padding: 5px;
-                border-radius: 5px 0 0 5px;
-                border: none;
-                outline: none;
-                height: 40px;
                 width: 100%;
-                font-family: 'Geist Mono';
-                user-select: all;
-            }
-            #city-lookup::selection {
-                background-color: var(--daytime-bg);
+                border-radius: 15px;
                 color: white;
-            }
-            #city-lookup:focus {
                 outline: none;
+                border: none;
+                font-size: 14px;
             }
-            #city-lookup::placeholder {
-                color: #dbdbdb;
-            }
-            body > p {
-                font-family: Lexend Deca;
-                color: white;
-                position: absolute;
-                top: 0%;
-                left: 50%;
-                transform: translate(-50%, 0);
-                text-align: center;
-            }
-            #current-location {
-                height: 40px;
-                width: 40px;
-                border-radius: 0 5px 5px 0;
-                background-color: white;
-                filter: grayscale(100%);
-                text-align: center;
-                line-height: 40px;
-                transition: all 0.25s;
-            }
-            #current-location:hover {
-                background-color: #c9c9c9;
-                cursor: pointer;
-                transition: all 0.25s;
-                filter: grayscale(0);
-            }
-            #current-location:disabled {
-                filter: grayscale(100%);
-                background-color: #333;
-            }
-            #current-location:disabled:hover {
-                cursor: not-allowed;
+            #forecast {
+                width: 40%;
             }
         </style>
         <!-- Styling -->
-        <style>
-            @keyframes moveUp {
-                0% {
-                    transform: translate(-50%, 150%);
-                }
-                100% {
-                    transform: translate(-50%, 0);
-                }
-            }
-            @keyframes moveDown {
-                0% {
-                    transform: translate(-50%, 0);
-                }
-                100% {
-                    transform: translate(-50%, 150%);
-                }
-            }
-        </style>
-        <!-- Keyframes -->
 
         <p></p>
         <div id="main">
-            <h1>Météo</h1>
-            <div id="search-bar">
-                <input
-                    id="city-lookup"
-                    placeholder="Paris, London, New Delhi..."
-                />
-                <div id="current-location">&#128205;</div>
+            <div id="navbar"></div>
+            <div id="middle-screen">
+                <input id="search-bar" placeholder="Paris, New Delhi, New York..." />
+                <div id="main-info"></div>
+                <div id="hourly-forecast"></div>
+                <div id="air-conditions">
+                    <p>Conditions de l'air</p>
+                </div>
             </div>
+            <div id="forecast"></div>
         </div>
-        <div id="error-box" data-displayed="false">
-            <p>&#9888;</p>
-        </div>
-        <script src="app.js"></script>
+        <!-- <script src="app.js"></script> -->
+        <script src="db.js"></script>
     </body>
 </html>

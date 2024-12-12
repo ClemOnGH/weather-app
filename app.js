@@ -1,139 +1,136 @@
 console.clear();
 const ow = {
-    appId: 'e7ce94cc98e49a5c72dd32e24f5edc85',
-    weather:
-        'https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}',
-    geo: 'http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=${maxResults}&appid=${apiKey}',
+    appId: "e7ce94cc98e49a5c72dd32e24f5edc85",
     isOnCooldown: false,
     end: null,
     interval: null,
     hasReceivedData: false,
+    geo: { url: "http://api.openweathermap.org/geo/1.0/direct?q={city}&limit={maxResults}&appid={apiKey}", data: { lon: null, lat: null, name: null } },
+    weather: { url: "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={apiKey}&units=metric", data: null },
+    forecast: { url: "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={apiKey}", data: null },
 };
 
-function checkLocationPermission(status) {
-    switch (status) {
-        case 'granted':
-            currentLocation.style.filter = 'none';
-            break;
-        // case 'prompt':
-        //     currentLocation.style.filter = 'grayscale(100%)';
-        //     break;
-        case 'denied':
-            currentLocation.textContent = '❌';
-            currentLocation.style.filter = 'grayscale(100%)';
-            currentLocation.disabled = 'true';
-            currentLocation.addEventListener('mouseover', () => {
-                currentLocation.style.cursor = 'not-allowed';
-                currentLocation.style.backgroundColor = '#c9c9c9';
-            });
-            break;
+const searchBar = document.getElementById("search-bar");
+const prompt = searchBar.value;
+const main = document.getElementById("main");
+const weatherInfo = document.getElementById("main-info");
+const mainInfo = document.querySelectorAll("#main-info p");
+const airConditions = document.getElementById("air-conditions");
+
+searchBar.addEventListener("input", (d) => {
+    const spl = d.target.value.split("");
+    if (spl.length >= 58) {
+        spl.length = 58;
+        d.target.value = spl.join("");
     }
-}
-
-function findCity(prompt) {
-    const url = ow.geo
-        .replace('${apiKey}', ow.appId)
-        .replace('${maxResults}', 5)
-        .replace('${city}', prompt);
-    fetch(url)
-        .then((response) => {
-            return response.json();
-        })
-        .then((d) => {
-            console.log(getCurrentWeather(d));
-        })
-        .catch((err) => console.error(err));
-}
-
-function getCurrentWeather(city) {
-    navigator.permissions
-        .query({ name: 'geolocation' })
-        .then((permissionStatus) =>
-            checkLocationPermission(permissionStatus.state)
-        )
-        .then(() => {
-            let url = city[0];
-            // if (typeof city === 'array') {
-            //     url = ow.weather
-            //         .replace('${apiKey}', ow.appId)
-            //         .replace('${lon}', city[0].lon)
-            //         .replace('${lat}', city[0].lat);
-            // } else if (typeof city !== 'array') {
-            //     url = ow.weather
-            //         .replace('${apiKey}', ow.appId)
-            //         .replace('${lon}', city.lon)
-            //         .replace('${lat}', city.lat);
-            // }
-            fetch(url)
-                .then((response) => {
-                    ow.hasReceivedData = true;
-                    return response.json();
-                })
-                .then((data) => {
-                    console.log(data);
-                });
-        })
-        .catch((err) => {
-            ow.hasReceivedData = false;
-            console.error(err);
-        });
-}
-
-const errorSign = document.getElementById('error-box');
-
-window.addEventListener('load', () => {
-    checkLocationPermission();
 });
 
-const cityLookup = document.getElementById('city-lookup');
-const currentLocation = document.getElementById('current-location');
-
-cityLookup.addEventListener('input', (d) => {
-    let prompt = d.target.value;
-    let arr = prompt.split('');
-    if (arr.length > 58) arr.length = 58;
-    cityLookup.value = arr.join('');
-});
-
-cityLookup.addEventListener('keyup', (d) => {
-    if (d.keyCode === 13 || d.code === 'Enter') {
-        if (!d.target.value || d.target.value === '') {
+searchBar.addEventListener("keyup", (k) => {
+    if (k.code === "Enter" || k.keyCode === 13) {
+        if (!k.target.value) {
             return;
-        }
-
-        if (!ow.isOnCooldown && !ow.hasReceivedData) {
-            const city = findCity(d.target.value);
-            getCurrentWeather(city);
-
-            const date = new Date();
-            ow.end = new Date(date.getTime() + 15000);
-            ow.isOnCooldown = true;
-
-            ow.interval = setInterval(() => {
-                errorSign.children[0].textContent = `Vous devez attendre ${(
-                    (ow.end - new Date().getTime()) /
-                    1000
-                ).toFixed(1)}s avant de pouvoir envoyer une autre requête.`;
-            }, 100);
-
-            setTimeout(() => {
-                ow.start = null;
-                ow.end = null;
-                ow.cooldown = null;
-                clearInterval(ow.interval);
-                ow.interval = null;
-                ow.isOnCooldown = false;
-                errorSign.children[0].textContent = `Vous devez attendre 0.0s avant de pouvoir envoyer une autre requête.`;
-                errorSign.style.bottom = '-20%';
-            }, 15000);
         } else {
-            errorSign.style.bottom = '0%';
+            getWeather(k.target.value);
         }
     }
 });
 
-currentLocation.addEventListener('click', () => {
-    checkLocationPermission();
-});
+async function getWeather(prompt) {
+    if (!prompt) {
+        console.error("No prompt found.");
+    }
 
-// const data = fetch();
+    try {
+        const geoUrl = ow.geo.url.replace("{city}", prompt).replace("{maxResults}", 1).replace("{apiKey}", ow.appId);
+        const geoResponse = await fetch(geoUrl);
+        const geoData = await geoResponse.json();
+
+        if (geoData.length === 0) {
+            console.error("No city found.");
+        } else {
+            ow.geo.data.lon = geoData[0].lon;
+            ow.geo.data.lat = geoData[0].lat;
+            ow.geo.data.name = geoData[0].name;
+        }
+
+        try {
+            const weatherUrl = ow.weather.url.replace("{lon}", ow.geo.data.lon).replace("{lat}", ow.geo.data.lat).replace("{apiKey}", ow.appId);
+            const weatherResponse = await fetch(weatherUrl);
+            const weatherData = await weatherResponse.json();
+            ow.weather.data = weatherData;
+            console.log(ow.weather.data);
+            updateUI(ow.weather.data);
+        } catch (e) {
+            console.error(e);
+        }
+
+        try {
+            const forecastUrl = ow.forecast.url.replace("{lon}", ow.geo.data.lon).replace("{lat}", ow.geo.data.lat).replace("{apiKey}", ow.appId);
+            const forecastResponse = await fetch(forecastUrl);
+            const forecastData = await forecastResponse.json();
+            ow.forecast.data = forecastData;
+        } catch (e) {
+            console.error(e);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function getCountryName(code, locale = "fr") {
+    const displayNames = new Intl.DisplayNames([locale], { type: "region" });
+    return displayNames.of(code);
+}
+
+function updateUI(data) {
+    const weatherCode = ow.weather.data.weather[0].id;
+    const city = document.createElement("p");
+    const country = document.createElement("p");
+    const temp = document.createElement("p");
+    const icon = document.createElement("img");
+
+    city.textContent = ow.geo.data.name;
+    country.textContent = getCountryName(ow.weather.data.sys.country);
+    temp.textContent = ow.weather.data.main.temp.toFixed(1) + "°C";
+    icon.id = "weather-icon";
+
+    if (weatherCode >= 200 && weatherCode <= 232) {
+        icon.src = "./icons/thunderstorm.png";
+    } else if (weatherCode >= 300 && weatherCode <= 321) {
+        icon.src = "./icons/rain.png";
+    } else if (weatherCode >= 500 && weatherCode <= 531) {
+        icon.src = "./icons/rain.png";
+    } else if (weatherCode >= 600 && weatherCode <= 622) {
+        icon.src = "./icons/snowflakes.png";
+    } else if (weatherCode >= 801 && weatherCode <= 804) {
+        icon.src = "./icons/slightly_cloudy.png";
+    }
+    switch (ow.weather.data.weather[0].id) {
+        case 701:
+            icon.src = "./icons/fog.png";
+            break;
+        case 711:
+            icon.src = "./icons/fire.png";
+            break;
+        case 721:
+            icon.src = "./icons/haze.png";
+            break;
+        case 731:
+            icon.src = "./icons/dust.png";
+            break;
+        case 741:
+            icon.src = "./icons/fog.png";
+            break;
+        case 751:
+            icon.src = "./icons/sand.png";
+            break;
+        case 800:
+            icon.src = "./icons/sun.png";
+            break;
+    }
+    weatherInfo.innerHTML = "";
+    weatherInfo.appendChild(city);
+    weatherInfo.appendChild(country);
+    weatherInfo.appendChild(temp);
+    weatherInfo.appendChild(icon);
+}
