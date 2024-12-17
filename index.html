@@ -9,9 +9,10 @@
     </head>
     <body>
         <style>
-            @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
-            @import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap");
-            @import url("https://fonts.googleapis.com/css2?family=Anaheim:wght@400..800&display=swap");
+            @import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Anaheim:wght@400..800&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
             :root {
                 --dark-bg: #0b121e;
                 --dark-accent: #202b3a;
@@ -74,7 +75,7 @@
             #main-info h3,
             #main-info p {
                 color: white;
-                font-family: "SF Pro Display";
+                font-family: 'Roboto';
                 font-weight: 200;
             }
             #main-info p:nth-child(1) {
@@ -110,7 +111,7 @@
             #air-conditions > p {
                 color: var(--dark-text);
                 font-weight: 800;
-                font-family: "SF Pro Display";
+                font-family: 'Roboto';
             }
             #search-bar {
                 width: 100%;
@@ -123,6 +124,26 @@
             #forecast {
                 width: 40%;
             }
+            #search-plus-clown {
+                display: flex;
+                flex-direction: row;
+            }
+            #clown-mode {
+                height: 100%;
+                width: 40px;
+                border: 2px solid var(--dark-accent);
+                border-radius: 10px;
+                margin-right: 1rem;
+                transition: all 0.25s;
+                text-align: center;
+                line-height: 44px;
+            }
+            #clown-mode:hover {
+                cursor: pointer;
+                border: 2px solid rgba(0, 0, 0, 0);
+                transition: all 0.25s;
+                background-color: var(--dark-accent);
+            }
         </style>
         <!-- Styling -->
 
@@ -130,7 +151,13 @@
         <div id="main">
             <div id="navbar"></div>
             <div id="middle-screen">
-                <input id="search-bar" placeholder="Paris, New Delhi, New York..." />
+                <div id="search-plus-clown">
+                    <div id="clown-mode">&#129313;</div>
+                    <input
+                        id="search-bar"
+                        placeholder="Paris, New Delhi, New York..."
+                    />
+                </div>
                 <div id="main-info"></div>
                 <div id="hourly-forecast"></div>
                 <div id="air-conditions">

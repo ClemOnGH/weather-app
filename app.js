@@ -2,12 +2,35 @@ console.clear();
 const ow = {
     appId: "e7ce94cc98e49a5c72dd32e24f5edc85",
     isOnCooldown: false,
+    clownMode: false,
+    audioFiles: [
+        { url: "audio/metal_pipe.mp3", volume: 0.1 },
+        { url: "audio/barbecue_bacon_burger.mp3", volume: 0.3 },
+        { url: "audio/fart.mp3", volume: 0.2 },
+        { url: "audio/hunter.mp3", volume: 0.15 },
+        { url: "audio/taco_bell.mp3", volume: 0.2 },
+        { url: "audio/bababooey.mp3", volume: 0.8 },
+        { url: "audio/vine_boom.mp3", volume: 0.4 },
+        { url: "audio/bad_to_the_bone.mp3", volume: 1 },
+    ],
     end: null,
     interval: null,
     hasReceivedData: false,
     geo: { url: "https://api.openweathermap.org/geo/1.0/direct?q={city}&limit={maxResults}&appid={apiKey}", data: { lon: null, lat: null, name: null } },
     weather: { url: "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={apiKey}&units=metric", data: null },
     forecast: { url: "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={apiKey}", data: null },
+    geo: {
+        url: "http://api.openweathermap.org/geo/1.0/direct?q={city}&limit={maxResults}&appid={apiKey}",
+        data: { lon: null, lat: null, name: null },
+    },
+    weather: {
+        url: "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={apiKey}&units=metric",
+        data: null,
+    },
+    forecast: {
+        url: "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={apiKey}",
+        data: null,
+    },
 };
 
 const searchBar = document.getElementById("search-bar");
@@ -16,6 +39,39 @@ const main = document.getElementById("main");
 const weatherInfo = document.getElementById("main-info");
 const mainInfo = document.querySelectorAll("#main-info p");
 const airConditions = document.getElementById("air-conditions");
+const clownMode = document.getElementById("clown-mode");
+
+clownMode.addEventListener("click", (e) => {
+    ow.clownMode = !ow.clownMode;
+    console.log(`Clown Mode is now ${ow.clownMode ? "ON" : "OFF"}`);
+});
+
+function playAudio(url) {
+    try {
+        const audio = new Audio(url.url);
+        audio.volume = url.volume;
+        audio.play().catch((err) => console.error("Audio Playback failed: ", err));
+        console.log(`Playing sound file ${url.url} at ${url.volume} volume`);
+    } catch (err) {
+        console.error("Error playing audio: ", err);
+    }
+}
+
+function playRandomAudio() {
+    try {
+        const randomFile = ow.audioFiles[Math.floor(Math.random() * ow.audioFiles.length)];
+        playAudio(randomFile);
+    } catch (err) {
+        console.error("Error playing audio: ", err);
+    }
+}
+
+window.addEventListener("keypress", (e) => {
+    if (ow.clownMode) {
+        console.log(`Input detected: ${e.data}`);
+        playRandomAudio();
+    }
+});
 
 searchBar.addEventListener("input", (d) => {
     const spl = d.target.value.split("");
