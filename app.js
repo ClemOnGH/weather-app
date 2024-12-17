@@ -5,7 +5,7 @@ const ow = {
     end: null,
     interval: null,
     hasReceivedData: false,
-    geo: { url: "http://api.openweathermap.org/geo/1.0/direct?q={city}&limit={maxResults}&appid={apiKey}", data: { lon: null, lat: null, name: null } },
+    geo: { url: "https://api.openweathermap.org/geo/1.0/direct?q={city}&limit={maxResults}&appid={apiKey}", data: { lon: null, lat: null, name: null } },
     weather: { url: "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={apiKey}&units=metric", data: null },
     forecast: { url: "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={apiKey}", data: null },
 };

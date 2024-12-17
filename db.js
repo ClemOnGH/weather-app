@@ -6,21 +6,14 @@
 
 // retrieveDB();
 
-fetch("http://localhost:3000/games/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        adresse: "Fffsqdvqsdv",
-        email: "dvsdvsv",
-        id: 44,
-        nom: "SABAH",
-        numeroFamille: "SASAS",
-        prenom: "QSD",
-        telephone: "QSDQD",
-    }),
-})
-    .then((response) => response.json())
-    .then((data) => {
-        console.log(data);
-        return (window.location.href = "https://www.google.com");
-    });
+(async () => {
+    try {
+        const raw = await fetch("http://localhost:3000/games");
+        const rawResponse = await raw.json();
+        for (game of rawResponse) {
+            console.log(game.title);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+})();
